@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String         @id @default(uuid())
+  name             String
+  email            String         @unique
+  password         String
+  location         String
+  avatar           String?
+  reputationPoints Int            @default(0)
+  skillsOffered    Skill[]        @relation("UserSkills")
+  tradeRequestsSent     TradeRequest[] @relation("TradeRequestsSent")
+  tradeRequestsReceived TradeRequest[] @relation("TradeRequestsReceived")
+}
+
+model Skill {
+  id               String   @id @default(uuid())
+  title            String
+  description      String
+  category         String
+  proficiencyLevel String
+  userId           String
+  user             User     @relation("UserSkills", fields: [userId], references: [id])
+  offeredInTrades    TradeRequest[] @relation("OfferedSkill")
+  requestedInTrades  TradeRequest[] @relation("RequestedSkill")
+}
+
+model TradeRequest {
+  id               String   @id @default(uuid())
+  requesterId      String
+  receiverId       String
+  offeredSkillId   String
+  requestedSkillId String
+  status           String   @default("PENDING") // PENDING, ACCEPTED, COMPLETED, REJECTED
+  
+  requester        User     @relation("TradeRequestsSent", fields: [requesterId], references: [id])
+  receiver         User     @relation("TradeRequestsReceived", fields: [receiverId], references: [id])
+  offeredSkill     Skill    @relation("OfferedSkill", fields: [offeredSkillId], references: [id])
+  requestedSkill   Skill    @relation("RequestedSkill", fields: [requestedSkillId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
