@@ -4,12 +4,37 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Auth({ defaultMode = 'login' }) {
   const [isLogin, setIsLogin] = useState(defaultMode === 'login');
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', location: '' });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Connect to explicit backend auth
-    navigate('/dashboard');
+    setError(null);
+    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+    
+    try {
+      const res = await fetch(`http://localhost:5000${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(isLogin ? { email: formData.email, password: formData.password } : formData)
+      });
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Authentication failed');
+      }
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -25,20 +50,21 @@ export default function Auth({ defaultMode = 'login' }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
           {!isLogin && (
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                  <input type="text" className="input-field pl-10" placeholder="John Doe" required />
+                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="input-field pl-10" placeholder="John Doe" required />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                  <input type="text" className="input-field pl-10" placeholder="City, Country" required />
+                  <input type="text" name="location" value={formData.location} onChange={handleInputChange} className="input-field pl-10" placeholder="City, Country" required />
                 </div>
               </div>
             </div>
@@ -48,7 +74,7 @@ export default function Auth({ defaultMode = 'login' }) {
             <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-              <input type="email" className="input-field pl-10" placeholder="you@example.com" required />
+              <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="input-field pl-10" placeholder="you@example.com" required />
             </div>
           </div>
 
@@ -56,7 +82,7 @@ export default function Auth({ defaultMode = 'login' }) {
             <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-              <input type="password" className="input-field pl-10" placeholder="••••••••" required />
+              <input type="password" name="password" value={formData.password} onChange={handleInputChange} className="input-field pl-10" placeholder="••••••••" required />
             </div>
           </div>
 

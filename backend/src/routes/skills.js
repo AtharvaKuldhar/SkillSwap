@@ -1,21 +1,62 @@
 const express = require('express');
 const router = express.Router();
+const prisma = require('../db');
+const authMiddleware = require('../middleware/auth');
 
-// Mock Skills Data
-const MOCK_SKILLS = [
-  { id: 1, title: 'Advanced React', category: 'Tech', distance: 2.4, rating: 4.8 },
-  { id: 2, title: 'Figma UI Design', category: 'Design', distance: 5.1, rating: 5.0 }
-];
-
+// Get all skills with their offering user
 router.get('/', async (req, res) => {
-  // In real app: Fetch from Prisma using geospatial queries
-  res.json(MOCK_SKILLS);
+  try {
+    const skills = await prisma.skill.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            location: true,
+            avatar: true,
+            reputationPoints: true
+          }
+        }
+      }
+    });
+    res.json(skills);
+  } catch (error) {
+    console.error('Error fetching skills:', error);
+    res.status(500).json({ error: 'Failed to fetch skills' });
+  }
 });
 
-router.post('/', async (req, res) => {
+// Create a new skill (Protected)
+router.post('/', authMiddleware, async (req, res) => {
   const { title, description, category, proficiencyLevel } = req.body;
-  // In real app: prisma.skill.create(...)
-  res.json({ success: true, skill: { id: 3, title, description, category } });
+  if (!title || !description || !category || !proficiencyLevel) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  try {
+    const skill = await prisma.skill.create({
+      data: {
+        title,
+        description,
+        category,
+        proficiencyLevel,
+        userId: req.userId 
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            location: true
+          }
+        }
+      }
+    });
+    res.status(201).json({ success: true, skill });
+  } catch (error) {
+    console.error('Error creating skill:', error);
+    res.status(500).json({ error: 'Failed to create skill' });
+  }
 });
 
 module.exports = router;

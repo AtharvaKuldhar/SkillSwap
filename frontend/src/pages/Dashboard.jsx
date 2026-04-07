@@ -1,38 +1,47 @@
+import { useState, useEffect } from 'react';
 import { Plus, Bell, Settings } from 'lucide-react';
 import SkillCard from '../components/SkillCard';
 
-const MOCK_MATCHES = [
-  {
-    id: 1,
-    user: { name: 'Alice Chen', avatar: 'https://ui-avatars.com/api/?name=Alice+Chen&background=f3e8ff&color=9333ea' },
-    skill: { title: 'Advanced React patterns', description: 'I can teach you advanced React concepts like custom hooks, context, and performance optimization.', category: 'Tech' },
-    distance: 2.4,
-    rating: 4.8
-  },
-  {
-    id: 2,
-    user: { name: 'Marcus Doe', avatar: 'https://ui-avatars.com/api/?name=Marcus+Doe&background=dcfce7&color=16a34a' },
-    skill: { title: 'Figma UI Design', description: 'Ill help you create beautiful minimal designs using Figma components and auto-layout.', category: 'Design' },
-    distance: 5.1,
-    rating: 5.0
-  },
-  {
-    id: 3,
-    user: { name: 'Sarah Miller', avatar: 'https://ui-avatars.com/api/?name=Sarah+Miller&background=ffedd5&color=ea580c' },
-    skill: { title: 'Conversational Spanish', description: 'Native Spanish speaker offering conversation practice for intermediate learners.', category: 'Language' },
-    distance: 8.0,
-    rating: 4.5
-  }
-];
-
 export default function Dashboard() {
+  const [matches, setMatches] = useState([]);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+
+    const fetchSkills = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/skills');
+        if (res.ok) {
+          const data = await res.json();
+          // Transform strict prisma shape to what Frontend expects for match cards:
+          // or just pass it as is. 
+          const transformed = data.map(skill => ({
+            id: skill.id,
+            user: { name: skill.user?.name || 'Unknown', avatar: skill.user?.avatar || `https://ui-avatars.com/api/?name=${skill.user?.name || 'User'}` },
+            skill: { title: skill.title, description: skill.description, category: skill.category },
+            distance: Math.floor(Math.random() * 10) + 1, // mock since we don't have geospatial yet
+            rating: 5.0
+          }));
+          setMatches(transformed);
+        }
+      } catch (err) {
+        console.error("Failed to fetch skills:", err);
+      }
+    };
+    fetchSkills();
+  }, []);
+
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
       
       {/* Dashboard Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Welcome, Atharva 👋</h1>
+          <h1 className="text-3xl font-bold text-slate-900">Welcome, {user?.name || 'Guest'} 👋</h1>
           <p className="text-slate-500 mt-1">Here's what's happening with your skill trades.</p>
         </div>
         <div className="flex gap-3">
@@ -110,7 +119,7 @@ export default function Dashboard() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {MOCK_MATCHES.map(match => (
+            {matches.map(match => (
               <SkillCard key={match.id} {...match} />
             ))}
           </div>

@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -15,9 +14,12 @@ model User {
   location         String
   avatar           String?
   reputationPoints Int            @default(0)
+  timeCredits      Int            @default(5)
   skillsOffered    Skill[]        @relation("UserSkills")
   tradeRequestsSent     TradeRequest[] @relation("TradeRequestsSent")
   tradeRequestsReceived TradeRequest[] @relation("TradeRequestsReceived")
+  reviewsGiven     Review[]       @relation("ReviewsGiven")
+  reviewsReceived  Review[]       @relation("ReviewsReceived")
 }
 
 model Skill {
@@ -44,6 +46,20 @@ model TradeRequest {
   receiver         User     @relation("TradeRequestsReceived", fields: [receiverId], references: [id])
   offeredSkill     Skill    @relation("OfferedSkill", fields: [offeredSkillId], references: [id])
   requestedSkill   Skill    @relation("RequestedSkill", fields: [requestedSkillId], references: [id])
+  review           Review?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model Review {
+  id          String       @id @default(uuid())
+  rating      Int
+  comment     String?
+  reviewerId  String
+  revieweeId  String
+  tradeId     String       @unique
+  reviewer    User         @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+  reviewee    User         @relation("ReviewsReceived", fields: [revieweeId], references: [id])
+  trade       TradeRequest @relation(fields: [tradeId], references: [id])
+  createdAt   DateTime     @default(now())
 }

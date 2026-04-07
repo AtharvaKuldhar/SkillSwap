@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const { PrismaClient } = require('@prisma/client');
 const http = require('http');
 const { Server } = require('socket.io');
 
@@ -15,8 +14,6 @@ const io = new Server(server, {
   }
 });
 
-// Mock Prisma for when DB isn't connected
-// const prisma = new PrismaClient();
 
 app.use(cors());
 app.use(express.json());

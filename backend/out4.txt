@@ -1,0 +1,321 @@
+﻿Γùç injected env (1) from .env // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+node : D:\Projects\SkillSw
+ap\backend\node_modules\@p
+risma\client\runtime\clien
+t.js:66
+At line:1 char:1
++ node src/index.js > 
+out_error.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (D  
+  :\Projects\Ski...me\c   
+ lient.js:66:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+Read more at https://pris.
+ly/d/client-constructor`),
+this.name="PrismaClientCon
+structorValidationError"}g
+et[Symbol.toStringTag](){r
+eturn"PrismaClientConstruc
+torValidationError"}};gt(R
+,"PrismaClientConstructorV
+alidationError");var _l=["
+errorFormat","adapter","ac
+celerateUrl","log","transa
+ctionOptions","omit","comm
+ents","__internal"],$l=["p
+retty","colorless","minima
+l"],Ll=["info","query","wa
+rn","error"],Cm={adapter:(
+)=>{},accelerateUrl:e=>{if
+(e!==void 0){if(typeof 
+e!="string")throw new 
+R(`Invalid value 
+${JSON.stringify(e)} for 
+"accelerateUrl" provided 
+to PrismaClient constructo
+r.`);if(e.trim().length===
+0)throw new 
+R('"accelerateUrl" 
+provided to PrismaClient 
+constructor must be a 
+non-empty string.')}},erro
+rFormat:e=>{if(e){if(typeo
+f e!="string")throw new 
+R(`Invalid value 
+${JSON.stringify(e)} for 
+"errorFormat" provided to 
+PrismaClient constructor.`
+);if(!$l.includes(e)){let 
+t=Ut(e,$l);throw new 
+R(`Invalid errorFormat 
+${e} provided to 
+PrismaClient constructor.$
+{t}`)}}},log:e=>{if(!e)ret
+urn;if(!Array.isArray(e))t
+hrow new R(`Invalid value 
+${JSON.stringify(e)} for 
+"log" provided to 
+PrismaClient 
+constructor.`);function 
+t(r){if(typeof r=="string"
+&&!Ll.includes(r)){let 
+n=Ut(r,Ll);throw new 
+R(`Invalid log level 
+"${r}" provided to 
+PrismaClient constructor.$
+{n}`)}}for(let r of 
+e){t(r);let 
+n={level:t,emit:i=>{let o=
+["stdout","event"];if(!o.i
+ncludes(i)){let 
+s=Ut(i,o);throw new 
+R(`Invalid value 
+${JSON.stringify(i)} for 
+"emit" in logLevel 
+provided to PrismaClient c
+onstructor.${s}`)}}};if(r&
+&typeof r=="object")for(le
+t[i,o]of Object.entries(r)
+)if(n[i])n[i](o);else 
+throw new R(`Invalid 
+property ${i} for "log" 
+provided to PrismaClient c
+onstructor`)}},transaction
+Options:e=>{if(!e)return;l
+et t=e.maxWait;if(t!=null&
+&t<=0)throw new 
+R(`Invalid value ${t} for 
+maxWait in 
+"transactionOptions" 
+provided to PrismaClient 
+constructor. maxWait 
+needs to be greater than 
+0`);let r=e.timeout;if(r!=
+null&&r<=0)throw new 
+R(`Invalid value ${r} for 
+timeout in 
+"transactionOptions" 
+provided to PrismaClient 
+constructor. timeout 
+needs to be greater than 0
+`)},omit:(e,t)=>{if(typeof
+ e!="object")throw new 
+R('"omit" option is 
+expected to be an object.'
+);if(e===null)throw new 
+R('"omit" option can not 
+be `null`');let 
+r=[];for(let[n,i]of 
+Object.entries(e)){let o=I
+m(n,t.runtimeDataModel);if
+(!o){r.push({kind:"Unknown
+Model",modelKey:n});contin
+ue}for(let[s,a]of 
+Object.entries(i)){let l=o
+.fields.find(u=>u.name===s
+);if(!l){r.push({kind:"Unk
+nownField",modelKey:n,fiel
+dName:s});continue}if(l.re
+lationName){r.push({kind:"
+RelationInOmit",modelKey:n
+,fieldName:s});continue}ty
+peof a!="boolean"&&r.push(
+{kind:"InvalidFieldValue",
+modelKey:n,fieldName:s})}}
+if(r.length>0)throw new R(
+Om(e,r))},comments:e=>{if(
+e!==void 0){if(!Array.isAr
+ray(e))throw new 
+R(`Invalid value 
+${JSON.stringify(e)} for 
+"comments" provided to 
+PrismaClient constructor. 
+Expected an array of SQL 
+commenter 
+plugins.`);for(let t=0;t<e
+.length;t++)if(typeof 
+e[t]!="function")throw 
+new R(`Invalid value at 
+index ${t} for "comments" 
+provided to PrismaClient 
+constructor. Each plugin 
+must be a function.`)}},__
+internal:e=>{if(!e)return;
+let t=["debug","engine","c
+onfigOverride"];if(typeof 
+e!="object")throw new 
+R(`Invalid value 
+${JSON.stringify(e)} for 
+"__internal" to 
+PrismaClient constructor`)
+;for(let[r]of Object.entri
+es(e))if(!t.includes(r)){l
+et n=Ut(r,t);throw new 
+R(`Invalid property 
+${JSON.stringify(r)} for 
+"__internal" provided to 
+PrismaClient constructor.$
+{n}`)}}};function 
+Rm(e){let 
+t=e.adapter!==void 0,r=e.a
+ccelerateUrl!==void 
+0;if(t&&r)throw new 
+R('The "adapter" and 
+"accelerateUrl" options 
+are mutually exclusive. 
+Please provide only one 
+of 
+them.');if(!t&&!r)throw 
+new R('Using engine type 
+"client" requires either 
+"adapter" or 
+"accelerateUrl" to be 
+provided to PrismaClient 
+constructor.')}function 
+jl(e,t){for(let[r,n]of Obj
+ect.entries(e)){if(!_l.inc
+ludes(r)){let 
+i=Ut(r,_l);throw new 
+R(`Unknown property ${r} 
+provided to PrismaClient c
+onstructor.${i}`)}Cm[r](n,
+t)}Rm(e)}function Ut(e,t){
+if(t.length===0||typeof 
+e!="string")return"";let 
+r=km(e,t);return r?` Did 
+you mean 
+"${r}"?`:""}function km(e,
+t){if(t.length===0)return 
+null;let r=t.map(i=>({valu
+e:i,distance:(0,ql.default
+)(e,i)}));r.sort((i,o)=>i.
+distance<o.distance?-1:1);
+let n=r[0];return n.distan
+ce<3?n.value:null}function
+ Im(e,t){return Vl(t.model
+s,e)??Vl(t.types,e)}functi
+on Vl(e,t){let r=Object.ke
+ys(e).find(n=>pe(n)===t);i
+f(r)return e[r]}function 
+Om(e,t){let 
+r=Be(e);for(let o of t)swi
+tch(o.kind){case"UnknownMo
+del":r.arguments.getField(
+o.modelKey)?.markAsError()
+,r.addErrorMessage(()=>`Un
+known model name: ${o.mode
+lKey}.`);break;case"Unknow
+nField":r.arguments.getDee
+pField([o.modelKey,o.field
+Name])?.markAsError(),r.ad
+dErrorMessage(()=>`Model 
+"${o.modelKey}" does not 
+have a field named "${o.fi
+eldName}".`);break;case"Re
+lationInOmit":r.arguments.
+getDeepField([o.modelKey,o
+.fieldName])?.markAsError(
+),r.addErrorMessage(()=>'R
+elations are already 
+excluded by default and 
+can not be specified in "o
+mit".');break;case"Invalid
+FieldValue":r.arguments.ge
+tDeepFieldValue([o.modelKe
+y,o.fieldName])?.markAsErr
+or(),r.addErrorMessage(()=
+>"Omit field option value 
+must be a boolean.");break
+}let{message:n,args:i}=sr(
+r,"colorless");return`Erro
+r validating "omit" 
+option:
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+      
+
+PrismaClientConstructorVal
+idationError: Unknown 
+property datasources 
+provided to PrismaClient 
+constructor.
+Read more at https://pris.
+ly/d/client-constructor
+    at jl (D:\Projects\Ski
+llSwap\backend\node_module
+s\@prisma\client\runtime\c
+lient.js:66:3832)
+    at new t (D:\Projects\
+SkillSwap\backend\node_mod
+ules\@prisma\client\runtim
+e\client.js:70:1808)
+    at Object.<anonymous> 
+(D:\Projects\SkillSwap\bac
+kend\src\db.js:4:16)
+    at Module._compile (no
+de:internal/modules/cjs/lo
+ader:1812:14)
+    at Object..js (node:in
+ternal/modules/cjs/loader:
+1943:10)
+    at Module.load (node:i
+nternal/modules/cjs/loader
+:1533:32)
+    at Module._load (node:
+internal/modules/cjs/loade
+r:1335:12)
+    at wrapModuleLoad (nod
+e:internal/modules/cjs/loa
+der:255:19)
+    at Module.require (nod
+e:internal/modules/cjs/loa
+der:1556:12)
+    at require (node:inter
+nal/modules/helpers:152:16
+)
+
+Node.js v24.14.1
