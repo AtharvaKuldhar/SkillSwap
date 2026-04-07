@@ -5,6 +5,8 @@ const { Server } = require('socket.io');
 
 const authRoutes = require('./routes/auth');
 const skillRoutes = require('./routes/skills');
+const tradeRoutes = require('./routes/trades');
+const reviewRoutes = require('./routes/reviews');
 
 const app = express();
 const server = http.createServer(app);
@@ -20,6 +22,8 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/skills', skillRoutes);
+app.use('/api/trades', tradeRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Socket.io for Real-time Notification
 io.on('connection', (socket) => {
