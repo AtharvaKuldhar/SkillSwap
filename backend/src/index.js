@@ -14,7 +14,7 @@ const aiRoutes     = require('./routes/ai');
 const app    = express();
 const server = http.createServer(app);
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONTEND_URL = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
 
 const io = new Server(server, {
   cors: { origin: FRONTEND_URL, methods: ['GET', 'POST'] }
