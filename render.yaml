@@ -1,0 +1,32 @@
+services:
+  # The Primary Node.js Backend
+  - type: web
+    name: skillswap-node-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npx prisma db push
+    startCommand: node src/index.js
+    envVars:
+      - key: DATABASE_URL
+        sync: false # You will enter this securely in Render dashboard
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false # Set this to your Vercel URL once deployed
+      - key: AI_SERVICE_URL
+        sync: false # Set this to your Python Render URL once deployed
+      - key: PORT
+        value: 5000
+
+  # The Python AI Recommendations Service
+  - type: web
+    name: skillswap-ai-service
+    env: python
+    rootDir: ai-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: NODE_BACKEND_URL
+        sync: false # Set this to your Node Render URL
