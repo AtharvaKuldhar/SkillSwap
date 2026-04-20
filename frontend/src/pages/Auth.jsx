@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, Lock, User, MapPin, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../utils/api';
 
 export default function Auth({ defaultMode = 'login', onAuthSuccess }) {
   const [isLogin, setIsLogin] = useState(defaultMode === 'login');
@@ -19,19 +20,10 @@ export default function Auth({ defaultMode = 'login', onAuthSuccess }) {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+    const path = isLogin ? '/auth/login' : '/auth/signup';
     
     try {
-      const res = await fetch(`http://localhost:5000${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(isLogin ? { email: formData.email, password: formData.password } : formData)
-      });
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.error || 'Authentication failed');
-      }
+      const data = await api.post(path, isLogin ? { email: formData.email, password: formData.password } : formData);
       
       localStorage.setItem('token', data.token);
       localStorage.setItem('user',  JSON.stringify(data.user));

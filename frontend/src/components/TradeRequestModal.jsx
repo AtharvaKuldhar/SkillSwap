@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Zap, ArrowLeftRight } from 'lucide-react';
+import { api } from '../utils/api';
 
 export default function TradeRequestModal({ targetSkill, onClose, onSuccess }) {
   const [mySkills, setMySkills] = useState([]);
@@ -8,16 +9,12 @@ export default function TradeRequestModal({ targetSkill, onClose, onSuccess }) {
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState(null);
 
-  const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
     const fetchMySkills = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/skills', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
+        const data = await api.get('/skills');
         // Filter to only user's own skills
         const mine = data.filter(s => s.userId === user.id);
         setMySkills(mine);
@@ -36,19 +33,10 @@ export default function TradeRequestModal({ targetSkill, onClose, onSuccess }) {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/trades', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          offeredSkillId: selectedSkillId,
-          requestedSkillId: targetSkill.id,
-        }),
+      const data = await api.post('/trades', {
+        offeredSkillId: selectedSkillId,
+        requestedSkillId: targetSkill.id,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Trade request failed');
       onSuccess(data.trade);
       onClose();
     } catch (err) {

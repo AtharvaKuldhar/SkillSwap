@@ -1,4 +1,11 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const getBaseUrl = () => {
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  // Ensure it doesn't end with /api if we are going to add it manually in some places, 
+  // but here we'll standardize: BASE_URL is the root.
+  return url.endsWith('/api') ? url : `${url}/api`;
+};
+
+const BASE_URL = getBaseUrl();
 
 const getHeaders = () => {
   const headers = { 'Content-Type': 'application/json' };
@@ -12,7 +19,7 @@ const handleResponse = async (res) => {
   if (!res.ok) {
     const err = new Error(data.error || `Request failed (${res.status})`);
     err.status = res.status;
-    err.errors = data.errors || null; // per-field validation errors
+    err.errors = data.errors || null;
     throw err;
   }
   return data;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeftRight, Clock, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
+import { api } from '../utils/api';
 
 const STATUS_CONFIG = {
   PENDING:   { label: 'Pending',   className: 'badge-pending',   icon: Clock },
@@ -112,19 +113,12 @@ export default function Trades() {
   const [activeTab, setActiveTab] = useState('received');
   const [loading, setLoading]   = useState(true);
 
-  const token = localStorage.getItem('token');
-
   const fetchTrades = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/trades', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setSent(data.sent || []);
-        setReceived(data.received || []);
-      }
+      const data = await api.get('/trades');
+      setSent(data.sent || []);
+      setReceived(data.received || []);
     } catch (err) {
       console.error('Failed to fetch trades:', err);
     } finally {
@@ -138,17 +132,8 @@ export default function Trades() {
 
   const handleUpdateStatus = async (tradeId, status) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/trades/${tradeId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status }),
-      });
-      if (res.ok) {
-        fetchTrades();
-      }
+      await api.patch(`/trades/${tradeId}/status`, { status });
+      fetchTrades();
     } catch (err) {
       console.error('Failed to update trade:', err);
     }
