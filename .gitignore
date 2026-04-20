@@ -1,2 +1,23 @@
-backend/.env
-ai-service/.env
+# Dependencies
+node_modules/
+dist/
+build/
+.env*
+!.env.example
+!.env.production
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+backend/node_modules/
+frontend/node_modules/
+frontend/dist/
+ai-service/__pycache__/
+ai-service/venv/
+.next/
