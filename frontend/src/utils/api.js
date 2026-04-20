@@ -1,7 +1,5 @@
 const getBaseUrl = () => {
   const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-  // Ensure it doesn't end with /api if we are going to add it manually in some places, 
-  // but here we'll standardize: BASE_URL is the root.
   return url.endsWith('/api') ? url : `${url}/api`;
 };
 
@@ -25,26 +23,31 @@ const handleResponse = async (res) => {
   return data;
 };
 
+// Helper to prevent /api/api double prefixing
+const cleanPath = (path) => {
+  return path.startsWith('/api/') ? path.replace('/api/', '/') : path;
+};
+
 export const api = {
   get: (path) =>
-    fetch(`${BASE_URL}${path}`, { headers: getHeaders() }).then(handleResponse),
+    fetch(`${BASE_URL}${cleanPath(path)}`, { headers: getHeaders() }).then(handleResponse),
 
   post: (path, body) =>
-    fetch(`${BASE_URL}${path}`, {
+    fetch(`${BASE_URL}${cleanPath(path)}`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(body),
     }).then(handleResponse),
 
   patch: (path, body) =>
-    fetch(`${BASE_URL}${path}`, {
+    fetch(`${BASE_URL}${cleanPath(path)}`, {
       method: 'PATCH',
       headers: getHeaders(),
       body: JSON.stringify(body),
     }).then(handleResponse),
 
   delete: (path) =>
-    fetch(`${BASE_URL}${path}`, {
+    fetch(`${BASE_URL}${cleanPath(path)}`, {
       method: 'DELETE',
       headers: getHeaders(),
     }).then(handleResponse),
