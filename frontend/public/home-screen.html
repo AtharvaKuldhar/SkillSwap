@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>SkillSwap — Trade Skills, Grow Together</title>
+  <meta name="description" content="SkillSwap: The global peer-to-peer skill bartering platform. Trade your expertise for new skills without exchanging money." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       RESET & ROOT TOKENS
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0a0a12;
+      --surface:      rgba(255,255,255,0.06);
+      --surface-high: rgba(255,255,255,0.10);
+      --blue:         #3b82f6;
+      --purple:       #8b5cf6;
+      --indigo:       #6c3bff;
+      --pink:         #ec4899;
+      --text:         #f0f0ff;
+      --muted:        rgba(240,240,255,0.5);
+      --glass-blur:   blur(18px);
+      --radius-card:  20px;
+      --radius-pill:  999px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Ambient background orbs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(108,59,255,0.2) 0%, transparent 70%);
+      top: -120px; left: -120px;
+      animation: orbDrift 14s ease-in-out infinite alternate;
+    }
+    body::after {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%);
+      bottom: 100px; right: -100px;
+      animation: orbDrift 18s ease-in-out infinite alternate-reverse;
+    }
+
+    /* ============================================================
+       KEYFRAME ANIMATIONS
+    ============================================================ */
+    @keyframes orbDrift {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.15); }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { filter: drop-shadow(0 0 6px #6c3bff) drop-shadow(0 0 12px rgba(108,59,255,0.4)); }
+      50%       { filter: drop-shadow(0 0 18px #3b82f6) drop-shadow(0 0 32px rgba(59,130,246,0.5)); }
+    }
+
+    @keyframes radarPulse {
+      0%   { transform: scale(1); opacity: 0.75; }
+      100% { transform: scale(2.3); opacity: 0; }
+    }
+
+    @keyframes radarSweep {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    @keyframes avatarPing {
+      0%, 100% { opacity: 1;   transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(1.35); }
+    }
+
+    @keyframes borderRotate {
+      from { --border-angle: 0deg; }
+      to   { --border-angle: 360deg; }
+    }
+
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+
+    @keyframes badgePop {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.2); }
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       LAYOUT SHELL
+    ============================================================ */
+    .app-shell {
+      position: relative;
+      max-width: 420px;
+      min-height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 88px;
+      scroll-behavior: smooth;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* ============================================================
+       ANIMATED GRADIENT BORDER UTILITY
+       Uses @property trick for rotating gradient
+    ============================================================ */
+    @property --border-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    .grad-border {
+      position: relative;
+      border-radius: var(--radius-card);
+      background:
+        linear-gradient(var(--bg), var(--bg)) padding-box,
+        conic-gradient(from var(--border-angle), var(--blue), var(--purple), var(--pink), var(--blue)) border-box;
+      border: 1.5px solid transparent;
+      animation: borderRotate 4s linear infinite;
+    }
+
+    /* ============================================================
+       GLASS CARD
+    ============================================================ */
+    .glass {
+      background: var(--surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: rgba(10,10,18,0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 0.5px solid rgba(255,255,255,0.08);
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Custom SVG Logo — infinity swap loop */
+    .logo-svg {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .notif-btn {
+      position: relative;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--surface-high);
+      border: none;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+    }
+    .notif-btn svg { width: 20px; height: 20px; }
+
+    .notif-badge {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 8px var(--blue);
+      animation: badgePop 2s ease-in-out infinite;
+    }
+
+    .avatar-ring {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      padding: 2px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+    }
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e1e3a, #2d1b69);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    /* ============================================================
+       SWAP BALANCE BANNER
+    ============================================================ */
+    .balance-banner {
+      margin: 16px 20px 0;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: var(--radius-pill);
+      animation: fadeSlideUp 0.5s ease both;
+    }
+
+    .balance-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .balance-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .balance-label {
+      font-family: 'Manrope', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .balance-val {
+      font-size: 17px;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .balance-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .active-tag {
+      font-family: 'Manrope', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .active-count {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--purple);
+    }
+
+    /* ============================================================
+       FIND A MATCH — RADAR SECTION
+    ============================================================ */
+    .section {
+      padding: 24px 20px 0;
+      animation: fadeSlideUp 0.6s ease both;
+    }
+    .section:nth-child(3) { animation-delay: 0.1s; }
+    .section:nth-child(4) { animation-delay: 0.2s; }
+    .section:nth-child(5) { animation-delay: 0.3s; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .section-sub {
+      font-family: 'Manrope', sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    .see-all {
+      font-family: 'Manrope', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .radar-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* World map faint backdrop */
+    .radar-map {
+      position: absolute;
+      inset: 0;
+      opacity: 0.055;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500'%3E%3Ccircle cx='200' cy='200' r='3' fill='%23fff'/%3E%3Ccircle cx='250' cy='180' r='2' fill='%23fff'/%3E%3Ccircle cx='300' cy='170' r='2.5' fill='%23fff'/%3E%3Ccircle cx='350' cy='160' r='2' fill='%23fff'/%3E%3Ccircle cx='400' cy='170' r='3' fill='%23fff'/%3E%3Ccircle cx='450' cy='165' r='2' fill='%23fff'/%3E%3Ccircle cx='500' cy='180' r='2.5' fill='%23fff'/%3E%3Ccircle cx='550' cy='200' r='2' fill='%23fff'/%3E%3Ccircle cx='600' cy='190' r='3' fill='%23fff'/%3E%3Ccircle cx='650' cy='175' r='2' fill='%23fff'/%3E%3Ccircle cx='700' cy='185' r='2.5' fill='%23fff'/%3E%3Ccircle cx='750' cy='200' r='2' fill='%23fff'/%3E%3Ccircle cx='800' cy='220' r='3' fill='%23fff'/%3E%3Ccircle cx='150' cy='260' r='2' fill='%23fff'/%3E%3Ccircle cx='180' cy='280' r='2.5' fill='%23fff'/%3E%3Ccircle cx='220' cy='300' r='2' fill='%23fff'/%3E%3Ccircle cx='850' cy='250' r='2' fill='%23fff'/%3E%3Ccircle cx='900' cy='240' r='2.5' fill='%23fff'/%3E%3Ccircle cx='950' cy='260' r='2' fill='%23fff'/%3E%3Ccircle cx='350' cy='310' r='2' fill='%23fff'/%3E%3Ccircle cx='400' cy='320' r='2.5' fill='%23fff'/%3E%3Ccircle cx='450' cy='330' r='2' fill='%23fff'/%3E%3Ccircle cx='500' cy='315' r='3' fill='%23fff'/%3E%3Ccircle cx='550' cy='325' r='2' fill='%23fff'/%3E%3Ccircle cx='600' cy='310' r='2.5' fill='%23fff'/%3E%3Ccircle cx='120' cy='350' r='2' fill='%23fff'/%3E%3Ccircle cx='160' cy='370' r='2.5' fill='%23fff'/%3E%3Ccircle cx='500' cy='400' r='3' fill='%23fff'/%3E%3Ccircle cx='540' cy='410' r='2' fill='%23fff'/%3E%3Ccircle cx='480' cy='415' r='2.5' fill='%23fff'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+      pointer-events: none;
+    }
+
+    /* Concentric pulse rings */
+    .radar-rings {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(59,130,246,0.45);
+      animation: radarPulse 3s ease-out infinite;
+    }
+    .ring:nth-child(1) { width: 60px;  height: 60px;  animation-delay: 0s; }
+    .ring:nth-child(2) { width: 60px;  height: 60px;  animation-delay: 0.6s; }
+    .ring:nth-child(3) { width: 60px;  height: 60px;  animation-delay: 1.2s; }
+    .ring:nth-child(4) { width: 60px;  height: 60px;  animation-delay: 1.8s; }
+    .ring:nth-child(5) { width: 60px;  height: 60px;  animation-delay: 2.4s; }
+
+    /* Radar sweep */
+    .radar-sweep {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        rgba(59,130,246,0) 0deg,
+        rgba(59,130,246,0) 330deg,
+        rgba(59,130,246,0.35) 355deg,
+        rgba(59,130,246,0.08) 360deg
+      );
+      animation: radarSweep 3s linear infinite;
+      pointer-events: none;
+    }
+
+    /* Center globe icon */
+    .radar-center {
+      position: relative;
+      z-index: 10;
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(108,59,255,0.3));
+      border: 1.5px solid rgba(59,130,246,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 0 24px rgba(59,130,246,0.4), 0 0 60px rgba(59,130,246,0.15);
+    }
+
+    /* User avatar pings on radar */
+    .radar-dot {
+      position: absolute;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--surface-high);
+      border: 1.5px solid rgba(139,92,246,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      box-shadow: 0 0 12px rgba(139,92,246,0.4);
+      animation: avatarPing 2.5s ease-in-out infinite;
+    }
+    .radar-dot:nth-child(1) { top: 18%; left: 22%; animation-delay: 0s; }
+    .radar-dot:nth-child(2) { top: 12%; right: 18%; animation-delay: 0.7s; }
+    .radar-dot:nth-child(3) { bottom: 20%; left: 28%; animation-delay: 1.3s; }
+    .radar-dot:nth-child(4) { bottom: 15%; right: 15%; animation-delay: 2s; }
+
+    .radar-label {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Manrope', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--blue);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       SKILL CATEGORIES — MARQUEE
+    ============================================================ */
+    .marquee-wrapper {
+      overflow: hidden;
+      mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 10px;
+      width: max-content;
+      animation: marquee 22s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+
+    .pill {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(59,130,246,0.3);
+      font-family: 'Manrope', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+    .pill:hover, .pill:active {
+      transform: scale(1.08);
+      box-shadow: 0 0 16px rgba(59,130,246,0.45);
+      border-color: var(--blue);
+      background: rgba(59,130,246,0.12);
+    }
+    .pill .emoji { font-size: 15px; }
+
+    /* ============================================================
+       RECOMMENDED SWAPS — SNAP CAROUSEL
+    ============================================================ */
+    .cards-carousel {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 4px 20px 8px;
+      scrollbar-width: none;
+    }
+    .cards-carousel::-webkit-scrollbar { display: none; }
+
+    .swap-card {
+      flex-shrink: 0;
+      width: 86%;
+      scroll-snap-align: start;
+      padding: 20px;
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    .swap-card:hover,
+    .swap-card:active {
+      transform: perspective(600px) rotateX(2deg) rotateY(-3deg) scale(1.02);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-avatar-ring {
+      flex-shrink: 0;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+    }
+    .card-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1c1040, #0e2245);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .card-meta { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-location {
+      font-family: 'Manrope', sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .skill-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .skill-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      font-family: 'Manrope', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-offers {
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.4);
+      color: #93c5fd;
+    }
+    .badge-wants {
+      background: rgba(139,92,246,0.15);
+      border: 1px solid rgba(139,92,246,0.4);
+      color: #c4b5fd;
+    }
+    .arrow-icon { font-size: 16px; color: var(--muted); }
+
+    .match-row { display: flex; flex-direction: column; gap: 6px; }
+    .match-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Manrope', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .match-pct {
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .match-bar-track {
+      height: 5px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    .match-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(90deg, var(--blue), var(--purple), var(--pink), var(--blue));
+      background-size: 200% auto;
+      animation: shimmer 2.5s linear infinite;
+    }
+
+    .swap-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: linear-gradient(135deg, var(--blue), var(--indigo), var(--purple));
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: box-shadow 0.25s ease, transform 0.2s ease;
+      box-shadow: 0 4px 20px rgba(108,59,255,0.35);
+    }
+    .swap-btn:hover, .swap-btn:active {
+      box-shadow: 0 6px 28px rgba(59,130,246,0.55);
+      transform: translateY(-1px);
+    }
+
+    /* ============================================================
+       BOTTOM NAVIGATION
+    ============================================================ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 420px;
+      padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+      background: rgba(10,10,18,0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 0.5px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 12px;
+      transition: background 0.2s ease;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); }
+    .nav-icon {
+      width: 24px; height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-icon svg { width: 22px; height: 22px; }
+    .nav-label {
+      font-family: 'Manrope', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .nav-item.active .nav-icon svg { stroke: var(--blue); }
+    .nav-item.active .nav-label { color: var(--blue); }
+    .nav-item.active .nav-icon::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      width: 20px; height: 2px;
+      background: var(--blue);
+      border-radius: 2px;
+      box-shadow: 0 0 8px var(--blue);
+    }
+    .nav-item.active .nav-icon { position: relative; }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===== STICKY HEADER ===== -->
+  <header class="header">
+    <div class="logo-group">
+      <!-- Custom SVG Logo: two rotating arrows forming an exchange/swap loop -->
+      <svg class="logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#3b82f6"/>
+            <stop offset="100%" stop-color="#8b5cf6"/>
+          </linearGradient>
+        </defs>
+        <!-- Outer ring -->
+        <circle cx="24" cy="24" r="20" stroke="url(#logoGrad)" stroke-width="2" fill="none" opacity="0.3"/>
+        <!-- Top arrow: left-to-right arc -->
+        <path d="M10 20 C10 12 20 8 28 12" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <polygon points="28,8 32,13 24,13" fill="url(#logoGrad)"/>
+        <!-- Bottom arrow: right-to-left arc -->
+        <path d="M38 28 C38 36 28 40 20 36" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <polygon points="20,40 16,35 24,35" fill="url(#logoGrad)"/>
+        <!-- Center dot -->
+        <circle cx="24" cy="24" r="3.5" fill="url(#logoGrad)" opacity="0.9"/>
+      </svg>
+      <span class="logo-text">SkillSwap</span>
+    </div>
+
+    <div class="header-right">
+      <button class="notif-btn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-badge"></span>
+      </button>
+      <div class="avatar-ring">
+        <div class="avatar-img">MK</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="scroll-area">
+
+    <!-- ===== SWAP BALANCE BANNER ===== -->
+    <div class="balance-banner glass grad-border">
+      <div class="balance-left">
+        <span class="balance-icon">⚡</span>
+        <div>
+          <div class="balance-label">Swap Balance</div>
+          <div class="balance-val">12 Credits</div>
+        </div>
+      </div>
+      <div class="balance-right">
+        <div class="active-tag">Active Swaps</div>
+        <div class="active-count">3</div>
+      </div>
+    </div>
+
+    <!-- ===== FIND A MATCH — RADAR ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Find a Match</div>
+          <div class="section-sub">Scanning users across 48 countries…</div>
+        </div>
+      </div>
+
+      <div class="radar-container glass grad-border" style="padding:0;">
+        <!-- Faint world map -->
+        <div class="radar-map"></div>
+
+        <!-- Concentric pulse rings -->
+        <div class="radar-rings">
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+        </div>
+
+        <!-- Sweep line -->
+        <div class="radar-sweep"></div>
+
+        <!-- User pings -->
+        <div class="radar-dot" style="top:18%;left:22%">🇯🇵</div>
+        <div class="radar-dot" style="top:14%;right:18%">🇧🇷</div>
+        <div class="radar-dot" style="bottom:22%;left:25%">🇩🇪</div>
+        <div class="radar-dot" style="bottom:18%;right:16%">🇿🇦</div>
+
+        <!-- Globe center -->
+        <div class="radar-center">🌐</div>
+
+        <span class="radar-label">● LIVE MATCHING ACTIVE</span>
+      </div>
+    </div>
+
+    <!-- ===== SKILL CATEGORIES — MARQUEE ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Browse Categories</div>
+      </div>
+      <div class="marquee-wrapper">
+        <div class="marquee-track">
+          <!-- First set -->
+          <div class="pill"><span class="emoji">🖥</span> Tech</div>
+          <div class="pill"><span class="emoji">🎵</span> Music</div>
+          <div class="pill"><span class="emoji">🌍</span> Languages</div>
+          <div class="pill"><span class="emoji">🎨</span> Design</div>
+          <div class="pill"><span class="emoji">📷</span> Photography</div>
+          <div class="pill"><span class="emoji">🍳</span> Cooking</div>
+          <div class="pill"><span class="emoji">💪</span> Fitness</div>
+          <div class="pill"><span class="emoji">🧠</span> Psychology</div>
+          <div class="pill"><span class="emoji">✍️</span> Writing</div>
+          <div class="pill"><span class="emoji">🎬</span> Film</div>
+          <!-- Duplicate for seamless loop -->
+          <div class="pill"><span class="emoji">🖥</span> Tech</div>
+          <div class="pill"><span class="emoji">🎵</span> Music</div>
+          <div class="pill"><span class="emoji">🌍</span> Languages</div>
+          <div class="pill"><span class="emoji">🎨</span> Design</div>
+          <div class="pill"><span class="emoji">📷</span> Photography</div>
+          <div class="pill"><span class="emoji">🍳</span> Cooking</div>
+          <div class="pill"><span class="emoji">💪</span> Fitness</div>
+          <div class="pill"><span class="emoji">🧠</span> Psychology</div>
+          <div class="pill"><span class="emoji">✍️</span> Writing</div>
+          <div class="pill"><span class="emoji">🎬</span> Film</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RECOMMENDED SWAPS — SNAP CAROUSEL ===== -->
+    <div class="section" style="padding-left:0; padding-right:0;">
+      <div class="section-header" style="padding: 0 20px;">
+        <div class="section-title">Recommended for You</div>
+        <a class="see-all" href="#">See all →</a>
+      </div>
+    </div>
+
+    <div class="cards-carousel">
+      <!-- Card 1: Aiko -->
+      <div class="swap-card glass grad-border">
+        <div class="card-top">
+          <div class="card-avatar-ring">
+            <div class="card-avatar">🇯🇵</div>
+          </div>
+          <div class="card-meta">
+            <div class="card-name">Aiko Tanaka</div>
+            <div class="card-location">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Tokyo, Japan · JST
+            </div>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-badge badge-offers">🎨 UI Design</span>
+          <span class="arrow-icon">→</span>
+          <span class="skill-badge badge-wants">🌍 Spanish</span>
+        </div>
+        <div class="match-row">
+          <div class="match-label">
+            <span>Match Score</span>
+            <span class="match-pct">94%</span>
+          </div>
+          <div class="match-bar-track">
+            <div class="match-bar-fill" style="width:94%"></div>
+          </div>
+        </div>
+        <button class="swap-btn">⚡ Request Swap</button>
+      </div>
+
+      <!-- Card 2: Carlos -->
+      <div class="swap-card glass grad-border">
+        <div class="card-top">
+          <div class="card-avatar-ring">
+            <div class="card-avatar">🇪🇸</div>
+          </div>
+          <div class="card-meta">
+            <div class="card-name">Carlos Ruiz</div>
+            <div class="card-location">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Barcelona, Spain · CET
+            </div>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-badge badge-offers">🎸 Guitar</span>
+          <span class="arrow-icon">→</span>
+          <span class="skill-badge badge-wants">🤖 Machine Learning</span>
+        </div>
+        <div class="match-row">
+          <div class="match-label">
+            <span>Match Score</span>
+            <span class="match-pct">87%</span>
+          </div>
+          <div class="match-bar-track">
+            <div class="match-bar-fill" style="width:87%"></div>
+          </div>
+        </div>
+        <button class="swap-btn">⚡ Request Swap</button>
+      </div>
+
+      <!-- Card 3: Priya -->
+      <div class="swap-card glass grad-border">
+        <div class="card-top">
+          <div class="card-avatar-ring">
+            <div class="card-avatar">🇮🇳</div>
+          </div>
+          <div class="card-meta">
+            <div class="card-name">Priya Sharma</div>
+            <div class="card-location">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Mumbai, India · IST
+            </div>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-badge badge-offers">🧘 Yoga</span>
+          <span class="arrow-icon">→</span>
+          <span class="skill-badge badge-wants">💻 Web Dev</span>
+        </div>
+        <div class="match-row">
+          <div class="match-label">
+            <span>Match Score</span>
+            <span class="match-pct">81%</span>
+          </div>
+          <div class="match-bar-track">
+            <div class="match-bar-fill" style="width:81%"></div>
+          </div>
+        </div>
+        <button class="swap-btn">⚡ Request Swap</button>
+      </div>
+    </div>
+
+    <div style="height: 12px;"></div>
+
+  </div><!-- /scroll-area -->
+
+  <!-- ===== BOTTOM NAVIGATION ===== -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="nav-home">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <span class="nav-label" style="color:var(--blue)">Home</span>
+    </div>
+
+    <div class="nav-item" id="nav-explore">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,240,255,0.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </div>
+      <span class="nav-label">Explore</span>
+    </div>
+
+    <div class="nav-item" id="nav-swaps">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,240,255,0.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+          <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+        </svg>
+      </div>
+      <span class="nav-label">Swaps</span>
+    </div>
+
+    <div class="nav-item" id="nav-messages">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,240,255,0.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <span class="nav-label">Messages</span>
+    </div>
+
+    <div class="nav-item" id="nav-profile">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,240,255,0.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <span class="nav-label">Profile</span>
+    </div>
+  </nav>
+
+</div><!-- /app-shell -->
+
+<script>
+  // Nav item active toggle
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.remove('active');
+        n.querySelector('.nav-label').style.color = '';
+        const svg = n.querySelector('svg');
+        if (svg) svg.setAttribute('stroke', 'rgba(240,240,255,0.45)');
+      });
+      item.classList.add('active');
+      item.querySelector('.nav-label').style.color = 'var(--blue)';
+      const svg = item.querySelector('svg');
+      if (svg) svg.setAttribute('stroke', '#3b82f6');
+    });
+  });
+
+  // Card 3D tilt on mouse move
+  document.querySelectorAll('.swap-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const rotX = ((y - cy) / cy) * -6;
+      const rotY = ((x - cx) / cx) * 6;
+      card.style.transform = `perspective(700px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+</script>
+
+</body>
+</html>
