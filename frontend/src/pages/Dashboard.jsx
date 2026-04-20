@@ -245,7 +245,6 @@ export default function Dashboard({ currentUser }) {
                 ))}
               </div>
             )}
-            )}
           </div>
 
           {/* Incoming Trade Requests */}

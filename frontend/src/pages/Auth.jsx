@@ -1,107 +1,28 @@
 import { useState } from 'react';
-import { Mail, Lock, User, MapPin, Eye, EyeOff, Loader2, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, User, MapPin, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-// ── Password strength scorer ──────────────────────────────────────────────────
-const getStrength = (pw) => {
-  if (!pw) return null;
-  let s = 0;
-  if (pw.length >= 8)           s++;
-  if (pw.length >= 12)          s++;
-  if (/[0-9]/.test(pw))        s++;
-  if (/[^a-zA-Z0-9]/.test(pw)) s++;
-  if (/[A-Z]/.test(pw))        s++;
-  if (s <= 1) return { level: 1, label: 'Weak',   color: 'bg-red-500',    text: 'text-red-500'    };
-  if (s <= 2) return { level: 2, label: 'Fair',   color: 'bg-orange-400', text: 'text-orange-400' };
-  if (s <= 3) return { level: 3, label: 'Good',   color: 'bg-yellow-400', text: 'text-yellow-500' };
-  return             { level: 4, label: 'Strong', color: 'bg-green-500',  text: 'text-green-500'  };
-};
-
-// ── Per-field validators ──────────────────────────────────────────────────────
-const validators = {
-  name: (v) => {
-    const t = v.trim();
-    if (!t)           return 'Name is required';
-    if (t.length < 2) return 'Name must be at least 2 characters';
-    if (t.length > 50) return 'Name must be under 50 characters';
-    return null;
-  },
-  email: (v) => {
-    if (!v.trim()) return 'Email is required';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())) return 'Enter a valid email address';
-    return null;
-  },
-  password: (v) => {
-    if (!v)          return 'Password is required';
-    if (v.length < 8)    return 'Password must be at least 8 characters';
-    if (!/\d/.test(v))   return 'Password must contain at least one number';
-    return null;
-  },
-  confirmPassword: (v, pw) => {
-    if (!v)     return 'Please confirm your password';
-    if (v !== pw) return 'Passwords do not match';
-    return null;
-  },
-  location: (v) => {
-    if (!v.trim()) return 'Location is required';
-    if (v.trim().length < 2) return 'Enter a valid location';
-    return null;
-  },
-};
 
 export default function Auth({ defaultMode = 'login', onAuthSuccess }) {
   const [isLogin, setIsLogin] = useState(defaultMode === 'login');
   const [formData, setFormData] = useState({ name: '', email: '', password: '', location: '' });
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const pwStrength = getStrength(form.password);
-
-  // Validate a single field
-  const validateField = (name, value) =>
-    name === 'confirmPassword'
-      ? validators.confirmPassword(value, form.password)
-      : validators[name]?.(value) ?? null;
-
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setForm(p => ({ ...p, [name]: value }));
-    setGlobalErr(null);
-    if (touched[name]) {
-      setErrors(p => ({ ...p, [name]: validateField(name, value) }));
-    }
-    // Also re-validate confirmPassword when password changes
-    if (name === 'password' && touched.confirmPassword) {
-      setErrors(p => ({ ...p, confirmPassword: validators.confirmPassword(form.confirmPassword, value) }));
-    }
-  };
-
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    setTouched(p => ({ ...p, [name]: true }));
-    setErrors(p => ({ ...p, [name]: validateField(name, value) }));
-  };
-
-  // Validate all relevant fields before submission
-  const validateAll = () => {
-    const fields = isLogin
-      ? ['email', 'password']
-      : ['name', 'email', 'password', 'confirmPassword', 'location'];
-
-    const errs = {};
-    fields.forEach(f => { errs[f] = validateField(f, form[f]); });
-    setErrors(errs);
-    setTouched(fields.reduce((a, f) => ({ ...a, [f]: true }), {}));
-    return !Object.values(errs).some(Boolean);
+    setFormData(p => ({ ...p, [name]: value }));
+    setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
     
     try {
-      const res  = await fetch(`http://localhost:5000${endpoint}`, {
+      const res = await fetch(`http://localhost:5000${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(isLogin ? { email: formData.email, password: formData.password } : formData)
@@ -118,6 +39,8 @@ export default function Auth({ defaultMode = 'login', onAuthSuccess }) {
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,6 +58,7 @@ export default function Auth({ defaultMode = 'login', onAuthSuccess }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+          
           {!isLogin && (
             <div className="space-y-4">
               <div>
@@ -170,7 +94,8 @@ export default function Auth({ defaultMode = 'login', onAuthSuccess }) {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary w-full py-3 mt-4 text-lg">
+          <button type="submit" disabled={loading} className="btn-primary w-full py-3 mt-4 text-lg flex justify-center items-center gap-2 disabled:opacity-60">
+            {loading && <Loader2 className="w-5 h-5 animate-spin" />}
             {isLogin ? 'Sign In' : 'Create Account'}
           </button>
         </form>
@@ -179,17 +104,17 @@ export default function Auth({ defaultMode = 'login', onAuthSuccess }) {
           {isLogin ? (
             <p>
               Don't have an account?{' '}
-              <button onClick={() => setIsLogin(false)} className="text-primary-600 hover:text-primary-700 font-semibold">
+              <button type="button" onClick={() => setIsLogin(false)} className="text-primary-600 hover:text-primary-700 font-semibold">
                 Sign up
               </button>
             </p>
           ) : (
-            <p>
+             <p>
               Already have an account?{' '}
-              <button onClick={() => setIsLogin(true)} className="text-primary-600 hover:text-primary-700 font-semibold">
+              <button type="button" onClick={() => setIsLogin(true)} className="text-primary-600 hover:text-primary-700 font-semibold">
                 Sign in
               </button>
-            </p>
+            </p>           
           )}
         </div>
       </div>
