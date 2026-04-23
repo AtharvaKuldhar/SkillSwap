@@ -28,11 +28,11 @@ export default function RequestTradeModal({ targetSkill, targetUser, mySkills, o
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-slide-up" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-6 border-b border-slate-100">
-          <h3 className="text-lg font-bold text-slate-800">Request a Trade</h3>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full max-w-md animate-slide-up" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-6 border-b border-slate-800">
+          <h3 className="text-xl font-bold text-white">Propose a Trade</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 text-slate-500 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -53,9 +53,10 @@ export default function RequestTradeModal({ targetSkill, targetUser, mySkills, o
             </div>
           </div>
 
-          <p className="text-sm text-slate-500 text-center">
-            from <span className="font-semibold text-slate-700">{targetUser?.name}</span>
-          </p>
+          <div className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs px-4 py-2.5 rounded-xl flex items-center gap-2">
+            <Zap className="w-4 h-4" />
+            <span>This trade request costs <strong>1 time credit</strong>.</span>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -72,16 +73,16 @@ export default function RequestTradeModal({ targetSkill, targetUser, mySkills, o
                     <label key={skill.id}
                       className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                         offeredSkillId === skill.id
-                          ? 'border-primary-400 bg-primary-50 shadow-sm'
-                          : 'border-slate-200 hover:border-primary-200 hover:bg-slate-50'
+                          ? 'border-indigo-500/50 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.1)]'
+                          : 'border-slate-800 hover:border-slate-700 hover:bg-white/5'
                       }`}>
                       <input type="radio" name="offeredSkill" value={skill.id}
                         checked={offeredSkillId === skill.id}
                         onChange={() => { setOfferedSkillId(skill.id); setError(null); }}
-                        className="text-primary-600 focus:ring-primary-500" />
+                        className="text-indigo-500 focus:ring-indigo-500 bg-slate-800 border-slate-700" />
                       <div>
-                        <p className="text-sm font-semibold text-slate-800">{skill.title}</p>
-                        <p className="text-xs text-slate-500">{skill.proficiencyLevel} · {skill.category}</p>
+                        <p className="text-sm font-semibold text-slate-100">{skill.title}</p>
+                        <p className="text-xs text-slate-400">{skill.proficiencyLevel} · {skill.category}</p>
                       </div>
                     </label>
                   ))}

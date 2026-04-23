@@ -1,6 +1,7 @@
 const getBaseUrl = () => {
-  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-  return url.endsWith('/api') ? url : `${url}/api`;
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  // Ensure we have the /api suffix but don't double it
+  return url.endsWith('/api') ? url : `${url.replace(/\/$/, '')}/api`;
 };
 
 const BASE_URL = getBaseUrl();
@@ -23,9 +24,11 @@ const handleResponse = async (res) => {
   return data;
 };
 
-// Helper to prevent /api/api double prefixing
+// Helper to prevent /api/api double prefixing and double slashes
 const cleanPath = (path) => {
-  return path.startsWith('/api/') ? path.replace('/api/', '/') : path;
+  let p = path.startsWith('/api/') ? path.replace('/api/', '/') : path;
+  if (!p.startsWith('/')) p = `/${p}`;
+  return p;
 };
 
 export const api = {

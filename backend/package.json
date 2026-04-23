@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "chmod +x ./node_modules/.bin/prisma && ./node_modules/.bin/prisma generate && ./node_modules/.bin/prisma db push",
+    "build": "prisma generate && prisma db push",
     "start": "node src/index.js",
-    "postinstall": "chmod +x ./node_modules/.bin/prisma && ./node_modules/.bin/prisma generate"
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",

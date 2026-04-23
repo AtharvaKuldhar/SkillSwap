@@ -27,6 +27,7 @@ app.use(express.json());
 app.set('io', io);
 
 // ── Routes ──────────────────────────────────────────────────────────────────
+app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
 app.use('/api/auth',    authRoutes);
 app.use('/api/skills',  skillRoutes);
 app.use('/api/trades',  tradeRoutes);

@@ -59,8 +59,8 @@ export default function Explore() {
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-1">Explore Skills</h1>
-        <p className="text-slate-500">Browse all skills offered by the SkillSwap community.</p>
+        <h1 className="text-3xl font-bold text-white mb-1">Explore Skills</h1>
+        <p className="text-slate-400">Browse all skills offered by the SkillSwap community.</p>
       </div>
 
       {/* ── Search + Filter bar ──────────────────────────────────── */}
@@ -93,8 +93,8 @@ export default function Explore() {
           <button key={c} onClick={() => setCategory(c)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               category === c
-                ? 'bg-primary-600 text-white shadow-sm'
-                : 'bg-white border border-slate-200 text-slate-600 hover:border-primary-300 hover:text-primary-600'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'bg-slate-800 border border-slate-700 text-slate-400 hover:border-indigo-500/50 hover:text-indigo-400'
             }`}>
             {c}
           </button>

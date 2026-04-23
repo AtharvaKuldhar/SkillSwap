@@ -30,14 +30,14 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0f172a] flex flex-col font-sans text-slate-100">
       {/* ── Navigation ─────────────────────────────────────────────────── */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-20 w-full">
+      <header className="fixed top-0 z-50 w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:bg-primary-700 transition-colors">S</div>
-            <span className="font-bold text-xl tracking-tight text-slate-800">SkillSwap</span>
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-[0_0_15px_rgba(79,70,229,0.4)] group-hover:bg-indigo-500 transition-all">S</div>
+            <span className="font-bold text-xl tracking-tight text-white">SkillSwap</span>
           </Link>
 
           {/* Nav links */}
@@ -45,22 +45,22 @@ function AppContent() {
             {authedUser ? (
               <>
                 <Link to="/dashboard"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                   <LayoutDashboard className="w-4 h-4" /> Dashboard
                 </Link>
                 <Link to="/explore"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                   <Compass className="w-4 h-4" /> Explore
                 </Link>
-                <div className="flex items-center gap-2 ml-2 pl-2 border-l border-slate-200">
+                <div className="flex items-center gap-2 ml-2 pl-2 border-l border-slate-700">
                   <img
-                    src={authedUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(authedUser.name)}&background=16a34a&color=fff`}
+                    src={authedUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(authedUser.name)}&background=4f46e5&color=fff`}
                     alt={authedUser.name}
-                    className="w-8 h-8 rounded-full border-2 border-primary-100"
+                    className="w-8 h-8 rounded-full border-2 border-indigo-500/30"
                   />
-                  <span className="text-slate-700 font-medium hidden sm:block">{authedUser.name.split(' ')[0]}</span>
+                  <span className="text-slate-300 font-medium hidden sm:block">{authedUser.name.split(' ')[0]}</span>
                   <button onClick={handleLogout}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors">
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors">
                     <LogOut className="w-4 h-4" />
                     <span className="hidden sm:block">Logout</span>
                   </button>
@@ -68,13 +68,16 @@ function AppContent() {
               </>
             ) : (
               <>
-                <Link to="/login"   className="px-3 py-2 text-slate-600 hover:text-slate-900 transition-colors rounded-lg hover:bg-slate-50">Sign In</Link>
+                <Link to="/login"   className="px-3 py-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5">Sign In</Link>
                 <Link to="/signup"  className="btn-primary">Get Started</Link>
               </>
             )}
           </nav>
         </div>
       </header>
+
+      {/* Spacing for fixed header */}
+      <div className="h-16" />
 
       {/* ── Routes ─────────────────────────────────────────────────────── */}
       <main className="flex-1 flex flex-col w-full">

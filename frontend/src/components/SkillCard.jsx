@@ -2,9 +2,9 @@ import { Star, MapPin, Info } from 'lucide-react';
 import { useState } from 'react';
 
 const SCORE_COLOR = (score) => {
-  if (score >= 70) return 'bg-green-100 text-green-700 border-green-200';
-  if (score >= 40) return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-  return 'bg-slate-100 text-slate-500 border-slate-200';
+  if (score >= 70) return 'bg-green-500/10 text-green-400 border-green-500/20';
+  if (score >= 40) return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+  return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
 };
 
 export default function SkillCard({ skill, user, rating, distance, matchScore, matchReason, onRequestTrade }) {
@@ -45,40 +45,40 @@ export default function SkillCard({ skill, user, rating, distance, matchScore, m
           className="w-11 h-11 rounded-full border-2 border-white shadow-sm flex-shrink-0"
         />
         <div className="min-w-0">
-          <h4 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors truncate">
+          <h4 className="font-bold text-white group-hover:text-indigo-400 transition-colors truncate">
             {skill?.title}
           </h4>
-          <p className="text-sm text-slate-500 truncate">{user?.name}</p>
+          <p className="text-sm text-slate-400 truncate">{user?.name}</p>
         </div>
       </div>
 
       {/* Meta chips */}
-      <div className="flex items-center gap-2 text-xs text-slate-500 mb-3 flex-wrap">
+      <div className="flex items-center gap-2 text-xs text-slate-400 mb-3 flex-wrap">
         {rating != null && (
-          <span className="flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-0.5 rounded-md border border-amber-100">
+          <span className="flex items-center gap-1 bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-md border border-amber-500/20">
             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
             {Number(rating).toFixed(1)}
           </span>
         )}
         {distance != null && (
-          <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+          <span className="flex items-center gap-1 bg-slate-800 px-2 py-0.5 rounded-md text-slate-300">
             <MapPin className="w-3 h-3" /> {distance} km
           </span>
         )}
         {skill?.category && (
-          <span className="bg-primary-50 text-primary-700 px-2 py-0.5 rounded-md border border-primary-100">
+          <span className="bg-indigo-500/10 text-indigo-300 px-2 py-0.5 rounded-md border border-indigo-500/20">
             {skill.category}
           </span>
         )}
         {skill?.proficiencyLevel && (
-          <span className="bg-accent-50 text-accent-700 px-2 py-0.5 rounded-md border border-accent-100">
+          <span className="bg-fuchsia-500/10 text-fuchsia-300 px-2 py-0.5 rounded-md border border-fuchsia-500/20">
             {skill.proficiencyLevel}
           </span>
         )}
       </div>
 
       {/* Description */}
-      <p className="text-sm text-slate-600 line-clamp-2 mb-4 flex-1">{skill?.description}</p>
+      <p className="text-sm text-slate-400 line-clamp-2 mb-4 flex-1">{skill?.description}</p>
 
       {/* Action button */}
       <button

@@ -128,10 +128,10 @@ export default function Dashboard({ currentUser }) {
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">
+          <h1 className="text-3xl font-bold text-white">
             Welcome, {user?.name?.split(' ')[0] || 'there'} 👋
           </h1>
-          <p className="text-slate-500 mt-1">Here's what's happening with your skill trades.</p>
+          <p className="text-slate-400 mt-1">Here's what's happening with your skill trades.</p>
         </div>
         <div className="flex gap-3">
           <button className="relative p-2 border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors">
@@ -221,7 +221,7 @@ export default function Dashboard({ currentUser }) {
 
           {/* My Skills */}
           <div className="card">
-            <h3 className="font-bold text-lg mb-4 text-slate-800">Skills You Offer ({mySkills.length})</h3>
+            <h3 className="font-bold text-lg mb-4 text-slate-100">Skills You Offer ({mySkills.length})</h3>
             {mySkills.length === 0 ? (
               <div className="text-center py-6">
                 <p className="text-slate-400 text-sm mb-3">No skills listed yet.</p>
@@ -232,10 +232,10 @@ export default function Dashboard({ currentUser }) {
             ) : (
               <div className="space-y-2">
                 {mySkills.map(skill => (
-                  <div key={skill.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100 group hover:border-primary-200 transition-colors">
+                  <div key={skill.id} className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg border border-slate-700 group hover:border-primary-500/50 transition-colors">
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-800 text-sm truncate">{skill.title}</p>
-                      <p className="text-xs text-slate-500">{skill.proficiencyLevel} · {skill.category}</p>
+                      <p className="font-semibold text-slate-100 text-sm truncate">{skill.title}</p>
+                      <p className="text-xs text-slate-400">{skill.proficiencyLevel} · {skill.category}</p>
                     </div>
                     <button onClick={() => deleteSkill(skill.id)}
                       className="ml-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0">
@@ -249,13 +249,13 @@ export default function Dashboard({ currentUser }) {
 
           {/* Incoming Trade Requests */}
           {receivedPending.length > 0 && (
-            <div className="card border-amber-200 bg-amber-50">
-              <h3 className="font-bold text-base mb-3 text-amber-800">
+            <div className="card border-amber-500/20 bg-amber-500/5">
+              <h3 className="font-bold text-base mb-3 text-amber-500">
                 Trade Requests ({receivedPending.length})
               </h3>
               <div className="space-y-3">
                 {receivedPending.map(trade => (
-                  <div key={trade.id} className="bg-white rounded-xl p-3 border border-amber-100 shadow-sm">
+                  <div key={trade.id} className="bg-slate-800/60 rounded-xl p-3 border border-slate-700 shadow-sm">
                     <div className="flex items-center gap-2 mb-2">
                       <img
                         src={trade.requester?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(trade.requester?.name || 'U')}&background=random`}
@@ -263,11 +263,11 @@ export default function Dashboard({ currentUser }) {
                         alt={trade.requester?.name}
                       />
                       <div className="min-w-0">
-                        <p className="text-sm font-bold text-slate-800 truncate">{trade.requester?.name}</p>
-                        <p className="text-xs text-slate-500">offers: <span className="font-medium">{trade.offeredSkill?.title}</span></p>
+                        <p className="text-sm font-bold text-slate-100 truncate">{trade.requester?.name}</p>
+                        <p className="text-xs text-slate-400">offers: <span className="font-medium text-slate-200">{trade.offeredSkill?.title}</span></p>
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 mb-3">wants: <span className="font-medium text-slate-700">{trade.requestedSkill?.title}</span></p>
+                    <p className="text-xs text-slate-400 mb-3">wants: <span className="font-medium text-slate-200">{trade.requestedSkill?.title}</span></p>
                     <div className="flex gap-2">
                       <button
                         disabled={actionLoading === trade.id}

@@ -154,6 +154,11 @@ router.patch('/:id/status', auth, async (req, res) => {
         prisma.user.update({ where: { id: trade.requesterId }, data: { reputationPoints: { increment: 10 } } }),
         prisma.user.update({ where: { id: trade.receiverId  }, data: { reputationPoints: { increment: 10 } } }),
       );
+    } else if (status === 'REJECTED') {
+      // Refund the 1 credit to the requester
+      updates.push(
+        prisma.user.update({ where: { id: trade.requesterId }, data: { timeCredits: { increment: 1 } } })
+      );
     }
 
     const [updatedTrade] = await prisma.$transaction(updates);
