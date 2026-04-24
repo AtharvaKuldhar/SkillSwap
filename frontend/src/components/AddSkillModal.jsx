@@ -54,6 +54,8 @@ export default function AddSkillModal({ onClose, onAdded }) {
     try {
       const { skill } = await api.post('/api/skills', form);
       onAdded?.(skill);
+      // Trigger background retrain so AI picks update
+      api.post('/api/ai/retrain', {}).catch(() => {});
       onClose();
     } catch (err) {
       if (err.errors) setErrors(p => ({ ...p, ...err.errors }));

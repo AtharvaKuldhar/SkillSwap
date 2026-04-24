@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { LogOut, LayoutDashboard, Compass } from 'lucide-react';
+import { LogOut, LayoutDashboard, Compass, Brain } from 'lucide-react';
 import LandingPage   from './pages/LandingPage';
 import Auth          from './pages/Auth';
 import Dashboard     from './pages/Dashboard';
 import Explore       from './pages/Explore';
+import AIInsights    from './pages/AIInsights';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // ── Inner app (must be inside <Router> to use useNavigate) ───────────────────
@@ -52,6 +53,13 @@ function AppContent() {
                   className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                   <Compass className="w-4 h-4" /> Explore
                 </Link>
+                <Link to="/ai-insights"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-indigo-300 hover:text-white transition-colors relative"
+                  style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.08))', border: '1px solid rgba(99,102,241,0.25)' }}>
+                  <Brain className="w-4 h-4 text-indigo-400" />
+                  AI Insights
+                  <span className="ml-0.5 w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                </Link>
                 <div className="flex items-center gap-2 ml-2 pl-2 border-l border-slate-700">
                   <img
                     src={authedUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(authedUser.name)}&background=4f46e5&color=fff`}
@@ -86,6 +94,11 @@ function AppContent() {
           <Route path="/login"   element={<Auth defaultMode="login"   onAuthSuccess={handleAuthSuccess} />} />
           <Route path="/signup"  element={<Auth defaultMode="signup"  onAuthSuccess={handleAuthSuccess} />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/ai-insights" element={
+            <ProtectedRoute>
+              <AIInsights />
+            </ProtectedRoute>
+          } />
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard currentUser={authedUser} onUserUpdate={setAuthedUser} />

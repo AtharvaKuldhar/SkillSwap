@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Loader2 } from 'lucide-react';
+import { Search, Filter, Loader2, Brain, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SkillCard         from '../components/SkillCard';
 import RequestTradeModal from '../components/RequestTradeModal';
 import { api } from '../utils/api';
@@ -58,10 +59,28 @@ export default function Explore() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
       {/* ── Header ──────────────────────────────────────────────────── */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-white mb-1">Explore Skills</h1>
         <p className="text-slate-400">Browse all skills offered by the SkillSwap community.</p>
       </div>
+
+      {/* ── AI CTA Banner (logged-in only) ────────────────────────── */}
+      {isLoggedIn && (
+        <div className="flex items-center justify-between gap-4 card border-indigo-500/20 bg-gradient-to-r from-indigo-500/10 to-fuchsia-500/10 mb-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex-shrink-0">
+              <Brain className="w-5 h-5 text-indigo-400" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">Try AI-Powered Recommendations</p>
+              <p className="text-xs text-slate-400">Get personalised skill matches based on your profile and platform trends</p>
+            </div>
+          </div>
+          <Link to="/ai-insights" className="btn-primary text-sm flex items-center gap-1.5 flex-shrink-0">
+            AI Insights <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      )}
 
       {/* ── Search + Filter bar ──────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">

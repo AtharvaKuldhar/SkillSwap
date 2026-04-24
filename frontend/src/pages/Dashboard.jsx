@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Bell, Star, Coins, Trash2, Check, X as XIcon, Loader2, Brain, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, Bell, Star, Coins, Trash2, Check, X as XIcon, Loader2, Brain, TrendingUp, ArrowUpRight, Sparkles, Zap, BarChart3, Users } from 'lucide-react';
 import SkillCard from '../components/SkillCard';
 import AddSkillModal     from '../components/AddSkillModal';
 import RequestTradeModal from '../components/RequestTradeModal';
@@ -82,6 +83,8 @@ export default function Dashboard({ currentUser }) {
     try {
       await api.delete(`/api/skills/${skillId}`);
       setProfile(p => p ? { ...p, skillsOffered: p.skillsOffered.filter(s => s.id !== skillId) } : p);
+      // Retrain AI after skill removal
+      api.post('/api/ai/retrain', {}).catch(() => {});
     } catch (err) {
       alert(err.message);
     }
@@ -189,29 +192,34 @@ export default function Dashboard({ currentUser }) {
 
           {/* AI Insights panel */}
           {insights && (insights.trending_categories?.length > 0 || insights.skill_gap_suggestions?.length > 0) && (
-            <div className="card border-accent-200 bg-accent-50">
-              <div className="flex items-center gap-2 mb-3">
-                <Brain className="w-4 h-4 text-accent-600" />
-                <h3 className="font-bold text-accent-800 text-sm">AI Insights</h3>
+            <div className="card border-indigo-500/20 bg-indigo-500/5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-indigo-400" />
+                  <h3 className="font-bold text-indigo-300 text-sm">AI Insights</h3>
+                </div>
+                <Link to="/ai-insights" className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                  Full Report <ArrowUpRight className="w-3 h-3" />
+                </Link>
               </div>
               {insights.skill_gap_suggestions?.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-xs font-semibold text-accent-700 mb-1.5 flex items-center gap-1">
+                  <p className="text-xs font-semibold text-indigo-300 mb-1.5 flex items-center gap-1">
                     <TrendingUp className="w-3 h-3" /> In-demand skills you could learn
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {insights.skill_gap_suggestions.map(c => (
-                      <span key={c} className="px-2 py-0.5 bg-white border border-accent-200 text-accent-700 rounded-full text-xs font-medium">{c}</span>
+                      <span key={c} className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 rounded-full text-xs font-medium">{c}</span>
                     ))}
                   </div>
                 </div>
               )}
               {insights.demand_areas?.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-accent-700 mb-1.5">Most traded right now</p>
+                  <p className="text-xs font-semibold text-indigo-300 mb-1.5">Most traded right now</p>
                   <div className="flex flex-wrap gap-1.5">
                     {insights.demand_areas.map(c => (
-                      <span key={c} className="px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full text-xs font-medium">{c}</span>
+                      <span key={c} className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-full text-xs font-medium">{c}</span>
                     ))}
                   </div>
                 </div>
@@ -321,6 +329,71 @@ export default function Dashboard({ currentUser }) {
 
         {/* ── Right Column — Skill Feed ─────────────────────────────── */}
         <div className="lg:col-span-2">
+          {/* AI Engine Status Banner — always visible */}
+          <Link to="/ai-insights" className="block mb-5 group">
+            <div className={`card py-4 border transition-all duration-200 group-hover:shadow-lg ${
+              aiAvailable
+                ? 'border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-fuchsia-500/10 group-hover:border-indigo-500/60'
+                : 'border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-slate-800 group-hover:border-amber-500/40'
+            }`}>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2.5 rounded-xl border flex-shrink-0 ${
+                    aiAvailable
+                      ? 'bg-indigo-500/20 border-indigo-500/30'
+                      : 'bg-amber-500/10 border-amber-500/20'
+                  }`}>
+                    <Brain className={`w-5 h-5 ${aiAvailable ? 'text-indigo-400' : 'text-amber-400'}`} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-bold text-white">
+                        {aiAvailable ? 'AI Recommendations Active' : 'AI Insights — Try Demo Mode'}
+                      </p>
+                      {aiAvailable ? (
+                        <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> LIVE
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-700/60 border border-slate-600 text-slate-400">
+                          Warming up
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      {aiAvailable
+                        ? `${recommendations.length} personalised matches found using TF-IDF + SVD + PageRank algorithms`
+                        : 'See how AI ranks skills by content match, collaborative filtering & trust score — click to explore'}
+                    </p>
+                  </div>
+                </div>
+                <div className={`flex items-center gap-1.5 text-xs font-semibold flex-shrink-0 ${
+                  aiAvailable ? 'text-indigo-400' : 'text-amber-400'
+                }`}>
+                  Open AI Insights <ArrowUpRight className="w-4 h-4" />
+                </div>
+              </div>
+
+              {/* Mini stats row */}
+              {aiAvailable && (
+                <div className="flex gap-4 mt-3 pt-3 border-t border-slate-700/60">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Content similarity via <strong className="text-slate-300">TF-IDF</strong></span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <Users className="w-3.5 h-3.5 text-fuchsia-400" />
+                    <span>Behaviour via <strong className="text-slate-300">SVD collab filtering</strong></span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Trust via <strong className="text-slate-300">PageRank</strong></span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Link>
+
           <div className="flex items-center justify-between mb-5">
             <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
               <button
@@ -347,11 +420,28 @@ export default function Dashboard({ currentUser }) {
           </div>
 
           {!aiAvailable && activeTab === 'ai' ? (
-            <div className="card text-center py-12 border-dashed border-2">
-              <Brain className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <h3 className="font-bold text-slate-600 mb-1">AI Engine is warming up</h3>
-              <p className="text-slate-400 text-sm">Add skills to your profile, then the AI will compute personalized matches for you.</p>
-              <button onClick={() => setActiveTab('all')} className="btn-secondary mt-4 text-sm">Browse All Skills</button>
+            <div className="card border-indigo-500/20 bg-indigo-500/5">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                  <Brain className="w-6 h-6 text-indigo-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-white mb-1">AI Picks needs data to train on</h3>
+                  <p className="text-slate-400 text-sm mb-4">
+                    The recommendation engine uses <strong className="text-indigo-300">TF-IDF</strong>, <strong className="text-fuchsia-300">SVD collaborative filtering</strong>, and <strong className="text-emerald-300">PageRank trust scoring</strong> to rank skills for you.
+                    It needs at least a few skills in the database to compute personalised matches.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button onClick={() => setAddSkillOpen(true)} className="btn-primary text-sm flex items-center justify-center gap-1.5">
+                      <Plus className="w-4 h-4" /> Add Your Skills
+                    </button>
+                    <Link to="/ai-insights" className="btn-secondary text-sm flex items-center justify-center gap-1.5">
+                      <Sparkles className="w-4 h-4" /> See Full AI Demo
+                    </Link>
+                    <button onClick={() => setActiveTab('all')} className="btn-secondary text-sm">Browse All Skills</button>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : displayCards.length === 0 ? (
             <div className="card text-center py-12 border-dashed border-2">
