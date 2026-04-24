@@ -291,12 +291,12 @@ export default function Dashboard({ currentUser }) {
           {/* Sent Trades */}
           {trades.sent.length > 0 && (
             <div className="card">
-              <h3 className="font-bold text-base mb-3 text-slate-800">Sent Trades</h3>
+              <h3 className="font-bold text-base mb-3 text-slate-100">Sent Trades</h3>
               <div className="space-y-2">
                 {trades.sent.slice(0, 5).map(trade => (
                   <div key={trade.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-slate-700 truncate">{trade.requestedSkill?.title}</p>
+                      <p className="text-sm font-medium text-slate-200 truncate">{trade.requestedSkill?.title}</p>
                       <p className="text-xs text-slate-400">→ {trade.receiver?.name}</p>
                     </div>
                     <div className="flex items-center gap-2 ml-2">

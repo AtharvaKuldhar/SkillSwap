@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Loader2, ArrowRight } from 'lucide-react';
+import { X, Loader2, ArrowRight, Zap } from 'lucide-react';
 import { api } from '../utils/api';
 
 export default function RequestTradeModal({ targetSkill, targetUser, mySkills, onClose, onSuccess }) {
@@ -60,7 +60,7 @@ export default function RequestTradeModal({ targetSkill, targetUser, mySkills, o
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Select your skill to offer
               </label>
               {mySkills.length === 0 ? (
